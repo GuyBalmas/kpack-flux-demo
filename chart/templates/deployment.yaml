@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-app
+  labels:
+    app: example-app
+  annotations:
+spec:
+  selector:
+    matchLabels:
+      app: example-app
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: example-app
+    spec:
+      containers:
+        - name: example-app
+          image: guybalmas/example-app:b9.20220713.115621
+          imagePullPolicy: Always
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:NativeMemoryTracking=off"
+            - name: "BPL_JAVA_NMT_ENABLED"
+              value: "false"
+            - name: "GREETING_MSG"
+              value: ${ Values.message.greetings }
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "150m"
+#            limits:
+#              memory: "1000Mi"
+#              cpu: "1000m"

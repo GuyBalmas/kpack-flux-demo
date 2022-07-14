@@ -1,0 +1,29 @@
+apiVersion: kpack.io/v1alpha2
+kind: Image
+metadata:
+  name: my-image
+  namespace: default
+spec:
+  tag: docker.io/guybalmas/example-app
+  serviceAccountName: kpack-service-account
+  builder:
+    name: my-cluster-builder
+    kind: ClusterBuilder
+  source:
+    git:
+      url: https://github.com/guybalmas/example-app
+      revision: main
+  build:
+    env:
+      - name: "BPL_JAVA_NMT_ENABLED"
+        value: "false"
+      - name: "BP_JVM_TYPE"
+        value: "JRE"
+      - name: "BP_JVM_VERSION"
+        value: "11"
+      - name: "BP_OCI_AUTHORS"
+        value: "GuyBalmas"
+      - name: "BP_OCI_TITLE"
+        value: "example-app"
+#      - name: "BP_OCI_VERSION"
+#        value: "1.0.0"
