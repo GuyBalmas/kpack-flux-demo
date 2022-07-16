@@ -5,3 +5,6 @@ metadata:
 spec:
   sources:
     - image: gcr.io/paketo-buildpacks/java
+#  serviceAccountRef:
+#    name: kpack-service-account
+#    namespace: default

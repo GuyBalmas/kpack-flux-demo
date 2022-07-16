@@ -3,7 +3,7 @@ kind: ClusterBuilder
 metadata:
   name: my-cluster-builder
 spec:
-  tag: guybalmas/builder
+  tag: guybalmas/cluster-builder
   stack:
     name: base
     kind: ClusterStack

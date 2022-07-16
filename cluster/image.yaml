@@ -4,15 +4,15 @@ metadata:
   name: my-image
   namespace: default
 spec:
-  tag: docker.io/guybalmas/example-app
+  tag: guybalmas/example-app:2.0.0
   serviceAccountName: kpack-service-account
   builder:
-    name: my-cluster-builder
     kind: ClusterBuilder
+    name: my-cluster-builder
   source:
     git:
-      url: https://github.com/guybalmas/example-app
       revision: main
+      url: https://github.com/guybalmas/example-app
   build:
     env:
       - name: "BPL_JAVA_NMT_ENABLED"

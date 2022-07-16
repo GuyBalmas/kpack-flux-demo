@@ -5,6 +5,6 @@ metadata:
 spec:
   id: "io.buildpacks.stacks.bionic" # "io.buildpacks.stack.id"
   buildImage:
-    image: "paketobuildpacks/builder:base"
+    image: "paketobuildpacks/build:base-cnb" # "paketobuildpacks/builder:base"
   runImage:
     image: "paketobuildpacks/run:base-cnb"
