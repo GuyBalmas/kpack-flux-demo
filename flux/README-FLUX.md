@@ -214,7 +214,7 @@ kubectl get pods
 kubectl port-forward example-app-d8c586df9-s6r7g 8080:8080 
 ```
 
-## Image Automation Updates
+## Image Update Automation
 1. Commit & push to GitHub a new source code change from your application repository.
 (I will be adding a new endpoint to the application controller under `/welcome`)
 
