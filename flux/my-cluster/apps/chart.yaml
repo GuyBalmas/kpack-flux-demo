@@ -15,4 +15,4 @@ spec:
         namespace: flux-system
       interval: 1m
   values:
-    image: guybalmas/example-app:b6.20220717.180702 # {"$imagepolicy": "flux-system:example-app"}
+    image: guybalmas/example-app:b1.20220717.034631 # {"$imagepolicy": "flux-system:example-app"}

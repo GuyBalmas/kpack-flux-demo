@@ -54,10 +54,10 @@ imagePullSecrets:
 ```
 apply onto the cluster:
 ```aidl
-kubectl apply -f cluster/kpack-sa.yaml
+kubectl apply -f kpack/kpack-sa.yaml
 
 #if needed
-kubectl delete -f cluster/kpack-sa.yaml
+kubectl delete -f kpack/kpack-sa.yaml
 
 #get all
 kubectl get sa
@@ -75,10 +75,10 @@ spec:
 ```
 apply onto the cluster:
 ```aidl
-kubectl apply -f cluster/cluster-store.yaml
+kubectl apply -f kpack/cluster-store.yaml
 
 #if needed
-kubectl delete -f cluster/cluster-store.yaml
+kubectl delete -f kpack/cluster-store.yaml
 
 #get status
 kp clusterstore status default-cluster-store
@@ -101,10 +101,10 @@ spec:
 ```
 apply onto the cluster:
 ```aidl
-kubectl apply -f cluster/cluster-stack.yaml
+kubectl apply -f kpack/cluster-stack.yaml
 
 #if needed
-kubectl delete -f cluster/cluster-stack.yaml
+kubectl delete -f kpack/cluster-stack.yaml
 
 #get status
 kp clusterstack status base
@@ -116,8 +116,10 @@ kp clusterstack status base
 - The Builder configuration will write to the registry with the secret configured in step one and will reference the stack and store created in step three and four. 
 - The builder order will determine the order in which buildpacks are used in the builder.
 ```aidl
-kubectl apply -f cluster/builder.yaml
-kubectl delete -f cluster/builder.yaml
+kubectl apply -f kpack/builder.yaml
+
+#if needed
+kubectl delete -f kpack/builder.yaml
 
 # View your newly created cluster-builder
 kp clusterbuilder status my-cluster-builder
@@ -159,10 +161,10 @@ spec:
 ```
 apply onto the cluster:
 ```aidl
-kubectl apply -f cluster/image.yaml
+kubectl apply -f kpack/image.yaml
 
 #If needed
-kubectl delete -f cluster/image.yaml
+kubectl delete -f kpack/image.yaml
 
 # View image resource status
 kubectl get images
@@ -204,7 +206,7 @@ Install helm plugin `cm-push`
 ```aidl
 helm plugin install https://github.com/chartmuseum/helm-push
 ```
-Push app chart to chartmuseum
+Push app chart to chartmuseum (from the application repo)
 ```aidl
 helm cm-push chart/ chartmuseum
 ```
