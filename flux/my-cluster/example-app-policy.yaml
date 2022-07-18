@@ -7,7 +7,12 @@ metadata:
 spec:
   imageRepositoryRef:
     name: dockerhub
+  filterTags:
+    pattern: '^b(\d)+\.(\d)+\.(\d)+'
   policy:
-    semver:
-      range: 'x.x.x'
-
+    alphabetical:
+      order: asc
+#  policy:
+#    semver:
+#      range: 'x.x.x'
+#

@@ -1,0 +1,4 @@
+debug: true
+port: 9090
+storage.backend: local
+storage.local.rootdir: /chartstorage

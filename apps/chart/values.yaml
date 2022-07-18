@@ -1,0 +1,4 @@
+image: guybalmas/example-app:b2.20220717.051343
+
+message:
+  greetings: "Welcome to Kpack + Flux demo!"

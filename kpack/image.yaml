@@ -4,7 +4,7 @@ metadata:
   name: my-image
   namespace: default
 spec:
-  tag: guybalmas/example-app:2.0.0
+  tag: guybalmas/example-app
   serviceAccountName: kpack-service-account
   builder:
     kind: ClusterBuilder

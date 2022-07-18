@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: example-app
+  namespace: default
   labels:
     app: example-app
   annotations:
@@ -22,7 +23,7 @@ spec:
     spec:
       containers:
         - name: example-app
-          image: guybalmas/example-app:b9.20220713.115621
+          image: {{ .Values.image }} # {"$imagepolicy": "flux-system:example-app"}
           imagePullPolicy: Always
           env:
             - name: JAVA_TOOL_OPTIONS
@@ -30,13 +31,13 @@ spec:
             - name: "BPL_JAVA_NMT_ENABLED"
               value: "false"
             - name: "GREETING_MSG"
-              value: ${ Values.message.greetings }
+              value: {{ .Values.message.greetings }}
           ports:
             - containerPort: 8080
           resources:
             requests:
               memory: "200Mi"
-              cpu: "150m"
+              cpu: "200m"
 #            limits:
 #              memory: "1000Mi"
 #              cpu: "1000m"

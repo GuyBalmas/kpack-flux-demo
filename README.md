@@ -30,16 +30,14 @@ kp-windows-0.6.0.exe
 ### Configure Kpack to push images to a docker registry 
 1. Create a secret to store docker registery config
 ```aidl
+#export creds as env vars
+export DOCKERHUB_USER=<username>
+export DOCKERHUB_PASSWORD=<password>
+
 kubectl create secret docker-registry docker-registry-credentials \
-    --docker-username=guybalmas \
-    --docker-password=RgLNk8YXLCi8x^k \
+    --docker-username=$DOCKERHUB_USER \
+    --docker-password=$DOCKERHUB_PASSWORD \
     --docker-server=https://index.docker.io/v1/ \
-    --namespace default
-    
-    kubectl create secret docker-registry docker-registry-credentials-v2 \
-    --docker-username=guybalmas \
-    --docker-password=RgLNk8YXLCi8x^k \
-    --docker-server=https://index.docker.io/v2/ \
     --namespace default
 ```
 2. Create a service account that references the registry secret created above
@@ -99,11 +97,6 @@ kp build logs my-image
 
 # View builds
 kubectl get builds
-
-
-
-kp image save example-app --tag guybalmas/example-app --cluster-builder my-builder --git https://github.com/guybalmas/example-app --git-revision 70ddeed90ee2e11a2ee6e28d7d43fb44e91a6d95 --wait 
-
 #
 ```
 
@@ -155,12 +148,10 @@ kubectl get pods
 kubectl describe pod example-app-c4db594b-4zvxz
 kubectl logs example-app-c4db594b-4zvxz
 
-kubectl port-forward example-app-c4db594b-4zvxz 8080:8080
 
 #View app 
-http://localhost:8080/
-kubectl exec -it example-app-5998bf6855-fzpgf -- sh
-
+kubectl port-forward example-app-c4db594b-4zvxz 8080:8080
+#app should be running on http://localhost:8080/
 ```
 
 # FluxCD
@@ -224,4 +215,7 @@ git clone https://github.com/GuyBalmas/infrastructure.git
 
 cd infrastructure
 ```
-kubectl -n default get deployments,services
+kubectl -n default get deployments,services -owide
+
+kubectl -n flux-system get deployments,services
+
