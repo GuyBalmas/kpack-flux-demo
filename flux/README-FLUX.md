@@ -149,7 +149,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m0s
-  url: http://localhost:9090/
+  url: http://192.168.229.1:9090/
 ```
 
 6. Create a `HelmRelease` to tell Flux which charts to deploy and update upon new images.
@@ -247,13 +247,7 @@ helm list -n flux-system
 #check for image version
 kubectl get deployments,services -owide
 ```
-5. Visit the new endpoint:
-```aidl
-#port-forword for visability
-kubectl get pods 
-kubectl port-forward example-app-d8c586df9-s6r7g 8080:8080 
-```
-6. View commit made by the `ImageUpdateAutomation` config we created, patching the image version tag:
+5. View commit made by the `ImageUpdateAutomation` config we created, patching the image version tag:
 ```aidl
 https://github.com/GuyBalmas/infrastructure/commits
 ```
@@ -289,8 +283,4 @@ helm list -n flux-system
 
 #check for image version
 kubectl get deployments,services -owide
-
-#port-forword for visability
-kubectl get pods 
-kubectl port-forward example-app-d8c586df9-s6r7g 8080:8080 
 ```
