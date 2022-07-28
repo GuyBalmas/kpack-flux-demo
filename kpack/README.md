@@ -206,7 +206,7 @@ Install helm plugin `cm-push`
 ```aidl
 helm plugin install https://github.com/chartmuseum/helm-push
 ```
-Push app chart to chartmuseum (from the application repo)
+Push app chart to chartmuseum **from the application repo**
 ```aidl
 helm cm-push chart/ chartmuseum
 ```
@@ -216,7 +216,11 @@ helm repo update
 helm search repo chartmuseum/example-app-chart
 
 helm install chartmuseum/example-app-chart --generate-name
+
+#check if helm release has been installed
 helm list
+
+#if needed
 helm uninstall <release name>
 
 # View deployment
@@ -226,18 +230,11 @@ kubectl get deployment example-app -owide
 # View pod 
 kubectl get pods
 
+# View pod details
 kubectl describe pod example-app-c4db594b-4zvxz
 kubectl logs example-app-c4db594b-4zvxz
 
 #View app 
 kubectl port-forward example-app-c4db594b-4zvxz 8080:8080
 #app should be running on http://localhost:8080/
-```
-
-## Infrastructure repo
-Clone the newly created repo
-```aidl
-git clone https://github.com/GuyBalmas/infrastructure.git
-
-cd infrastructure
 ```

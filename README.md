@@ -1,163 +1,80 @@
-# Kpack
-kpack is a Kubernetes native platform maintained by VMware under the VMware Tanzu project that utilizes unprivileged Kubernetes primitives to provide builds of OCI images as a platform implementation of Cloud Native Buildpacks (CNB).
+# GitOps CICD Demo
+### Using Kpack and Flux V2
 
-### Prerequisites
-1. kpack is installed and available on a kubernetes cluster.
+The goal of this demo is to demonstrate how to implement CICD workflow with image update automation for a CRD (HelmRelease).
 
-2. kpack cli - Get the kp cli from the github release
+We will be using:
+- **Kpack** – for continuous integration
+- **Flux V2** – for continuous delivery
 
-### Install Kpack on a k8s cluster
+### What is Kpack?
+`Kpack` a Kubernetes-native build service that builds container images on Kubernetes using Cloud Native Buildpacks. 
+It takes source code repositories (like `GitHub`), builds the code into a container image, and uploads it to the container registry of your choice.
+
+### Kpack main benefits for this demo
+- **No Dockerfile** - Kpack builds OCI-compliant containers directly from source code, eliminating the need for developers to build and maintain dockerfiles.
+- **Manage image build process** – build and push to image repository.
+- **Manage image updates** - detects changes to source code, dependency, or OS components and automatically updates containers.
+
+### What is Flux?
+- `Flux` is a tool for keeping Kubernetes clusters in sync with sources of configuration (like Git repositories), and automating updates to configuration when there is new code to deploy.
+- `Flux` is Based on a set of Kubernetes API extensions (CRDs) which control how git repositories and other sources of configuration (like helm repositories) are synced into the cluster.
+
+### Flux main benefits for this demo
+- **Just push to Git and Flux does the rest** - enables continuous application deployment (CD) through automatic reconciliation.
+- **Provides GitOps for both apps and infrastructure** - can also manage any Kubernetes resource.
+- **Automatic image update** – Flux V2 can even push back to `Git` with automated container image updates, deploy those changes, and keep your deployments and CRDs up-to-date.
+
+### Prerequisites 
+What I used is in (`parenthesis`)
+1. Running Kubernetes cluster (`minikube version: v1.25.2`)
+2. Running Docker (`Docker version 20.10.16`)
+
+### Steps
+1. Write simplistic Java code and push to git (`Spring-Boot`)
+2. After the code is pushed to git, build the code to an image with `Kpack` and push it to an image repository (`DockerHub`)
+3. Create a helm chart to deploy the application, and put in helm repository (`ChartMuseum`)
+4. Configure Flux to update the helm repository and deploy the application automatically once there is a new image in the repository.
+
+## Step 1 - Write a Java app
+I implemented a simple SpringBoot web app with a '`Hello World!`' page, starting up on `http://localhost:8080/`
+```
+git clone https://github.com/GuyBalmas/example-app.git
+```
+delete the `.git` folder and push the repo to your `GitHub`
+
+## Step 2 - build the code to an image with `Kpack`
+Follow the `Kpack` README.md at:
 ```aidl
-# Will be applied to kpack namespace by default
-kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.5.4/release-0.5.4.yaml
+kpack-flux-demo/kpack/README.md
 
-# Make sure all pods are running and the enviroment is ready
-kubectl get pods --namespace kpack --watch
+#or
 
+https://github.com/GuyBalmas/kpack-flux-demo/blob/main/kpack/README.md
 ```
 
-### Install Kpack CLI
+## Step 3 - Create a helm chart and push to helm repository
+I implemented a helm chart for the `example-app` SpringBoot web app, and it exists in its repo.
 ```aidl
-# Go to:
-https://github.com/vmware-tanzu/kpack-cli/releases/tag/v0.6.0
-
-# Download the binary file of kp, for example:
-kp-windows-0.6.0.exe 
-
-# Configurate kp binary in your PATH enviroment variable
+https://github.com/GuyBalmas/example-app/tree/main/chart
 ```
 
-### Configure Kpack to push images to a docker registry 
-1. Create a secret to store docker registery config
+Follow the `Install ChartMuseum` section of the `Kpack` README.md:
 ```aidl
-#export creds as env vars
-export DOCKERHUB_USER=<username>
-export DOCKERHUB_PASSWORD=<password>
+kpack-flux-demo/kpack/README.md
 
-kubectl create secret docker-registry docker-registry-credentials \
-    --docker-username=$DOCKERHUB_USER \
-    --docker-password=$DOCKERHUB_PASSWORD \
-    --docker-server=https://index.docker.io/v1/ \
-    --namespace default
-```
-2. Create a service account that references the registry secret created above
-```aidl
-kubectl apply -f cluster/kpack-sa.yaml
-kubectl delete -f cluster/kpack-sa.yaml
+#or
 
-kubectl get sa
+https://github.com/GuyBalmas/kpack-flux-demo/blob/main/kpack/README.md#install-chartmuseum
 ```
 
-3. Create a cluster store configuration
+## Step 4 - Configure Flux
+Follow the `Flux` README.md at:
 ```aidl
-kubectl apply -f cluster/cluster-store.yaml
-kubectl delete -f cluster/cluster-store.yaml
+kpack-flux-demo/flux/README.md
 
-kp clusterstore status default-cluster-store
+#or
+
+https://github.com/GuyBalmas/kpack-flux-demo/blob/main/flux/README.md
 ```
 
-4. Create a cluster stack configuration
-
-- A stack resource is the specification for a cloud native buildpacks stack used during build and in the resulting app image.
-```aidl
-kubectl apply -f cluster/cluster-stack.yaml
-kubectl delete -f cluster/cluster-stack.yaml
-
-kp clusterstack status base
-```
-
-5. Create a Builder configuration
-
-- A Builder is the kpack configuration for a builder image that includes the stack and buildpacks needed to build an OCI image from your app source code.
-- The Builder configuration will write to the registry with the secret configured in step one and will reference the stack and store created in step three and four. The builder order will determine the order in which buildpacks are used in the builder.
-```aidl
-kubectl apply -f cluster/builder.yaml
-kubectl delete -f cluster/builder.yaml
-
-# View your newly created cluster-builder
-kp clusterbuilder status my-cluster-builder
-
-kubectl get clusterbuilders
-
-```
-
-6. Create an image resource
-- An image resource is the specification for an OCI image that kpack should build and manage.
-```aidl
-kubectl apply -f cluster/image.yaml
-kubectl delete -f cluster/image.yaml
-
-# View image resource status
-kubectl get images
-kubectl get image my-image
-kp image status my-image
-
-# View build logs of my-image
-kp build logs my-image
-
-# View builds
-kubectl get builds
-#
-```
-
-# Install ChartMuseum 
-
-Download ChartMuseum CLI
-```aidl
-curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
-
-# or download chartmuseum CLI binary from
-# https://github.com/helm/chartmuseum/releases
-```
-
-Run ChartMuseum 
-```aidl
-chartmuseum --debug --port=9090 \
-  --storage="local" \
-  --storage-local-rootdir="./chartstorage"
-```
-Add ChartMuseum to repos
-```aidl
-helm repo add chartmuseum http://localhost:9090/
-```
-
-Install helm plugin `cm-push`
-```aidl
-helm plugin install https://github.com/chartmuseum/helm-push
-```
-Push app chart to chartmuseum
-```aidl
-helm cm-push chart/ chartmuseum
-```
-Install your chart from chartmuseum onto the cluster
-```aidl
-helm repo update
-helm search repo chartmuseum/example-app-chart
-
-helm install chartmuseum/example-app-chart --generate-name
-helm list
-helm uninstall <release name>
-
-# View deployment
-kubectl get deployments
-kubectl get deployment example-app -owide
-
-# View pod 
-kubectl get pods
-
-kubectl describe pod example-app-c4db594b-4zvxz
-kubectl logs example-app-c4db594b-4zvxz
-
-
-#View app 
-kubectl port-forward example-app-c4db594b-4zvxz 8080:8080
-#app should be running on http://localhost:8080/
-```
-
-## Infrastructure repo
-Clone the newly created repo
-```aidl
-git clone https://github.com/GuyBalmas/infrastructure.git
-
-cd infrastructure
-```
